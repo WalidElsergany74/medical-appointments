@@ -1,8 +1,8 @@
 "use client"
 import React, { useState } from 'react'
 import { Button } from '../ui/button'
-import { LogOut, Menu, XIcon } from 'lucide-react'
-import {  usePathname, useRouter } from 'next/navigation'
+import {  Menu, XIcon } from 'lucide-react'
+import {  usePathname } from 'next/navigation'
 import {  Routes } from '@/constants'
 import Link from '../link'
 import Image from 'next/image'

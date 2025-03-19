@@ -80,7 +80,7 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials, req) => {
+      authorize: async (credentials) => {
   
         const res = await login(credentials);
         if (res.status === 200 && res.user) {
