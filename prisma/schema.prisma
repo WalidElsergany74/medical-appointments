@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  username String   @unique
+  password String
+  role     UserRole @default(PATIENT)
+
+
+  specialtyId String?  
+  price       Float?
+  image       String?
+
+
+  availableDays WeekDay[]
+
+  
+  specialty Specialty? @relation(fields: [specialtyId], references: [id]) 
+  appointmentsAsDoctor Appointment[] @relation("DoctorAppointments")
+  appointmentsAsPatient Appointment[] @relation("PatientAppointments")
+
+  AvailableTimeSlot AvailableTimeSlot[]
+}
+
+
+enum WeekDay {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+
+
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+model Specialty {
+  id   String  @id @default(cuid())
+  name SpecialtyType @unique
+
+  doctors User[] 
+}
+
+
+
+
+enum SpecialtyType {
+  GENERAL 
+  GYNECOLOGIST
+  DERMATOLOGIST
+  PEDIATRICIAN
+  NEUROLOGIST
+  GASTROENTEROLOGIST
+}
+model AvailableTimeSlot {
+  id        String   @id @default(cuid())
+  doctorId  String   
+  day       WeekDay   
+  timeSlot  String    
+
+  doctor    User     @relation(fields: [doctorId], references: [id])
+
+  @@unique([doctorId, day, timeSlot]) 
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  patientId       String
+  doctorId        String
+  appointmentTime DateTime
+  status          AppointmentStatus
+ 
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  patient User  @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctor  User  @relation("DoctorAppointments", fields: [doctorId], references: [id])
+
+  @@unique([doctorId, appointmentTime]) 
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
